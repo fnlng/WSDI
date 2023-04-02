@@ -5,7 +5,8 @@ from app import create_app
 
 
 @click.command()
-@click.option('--debug', '-d', flag_value=True, default=False, type=click.BOOL)
+@click.option('--debug', '-d', flag_value=True, default=False, type=click.BOOL,
+              help="start with debug mode")
 def main(debug):
     app = create_app(debug)
     

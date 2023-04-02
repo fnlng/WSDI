@@ -33,9 +33,8 @@ def registry(app: "Flask", **context) -> "Flask":
         paths = folder.split('/')
         print('get the folder', folder if folder else '/')
         
-        file_list_str = ''
-        file_queue = asyncio.Queue(10)
-        dir_queue = asyncio.Queue(50)
+        # file_queue = asyncio.Queue(10)
+        # dir_queue = asyncio.Queue(50)
         file_list = []
         dir_list = []
         for filename in os.listdir(localFolder):

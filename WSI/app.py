@@ -1,12 +1,8 @@
 import json
 from flask import Flask, Blueprint
 
-try:
-    from icecream import ic
-except ImportError:  # Graceful fallback if IceCream isn't installed.
-    ic = lambda *a: None if not a else (a[0] if len(a) == 1 else a)  # noqa
 
-from registry import registry
+from .registry import registry
 
 
 
@@ -16,7 +12,7 @@ linux_folder = r'/run/media/fnlng/Windows/Users/fnlng/Desktop/pyp'
 
 
 def init_app():
-    app = Flask(__name__, 
+    app = Flask("WSI", 
                 static_folder='static', static_url_path=None,
             )
     app.jinja_env.variable_start_string = '{['
@@ -33,11 +29,6 @@ def init_app():
     return app
 
 def create_app(debug=False):
-    
-    ic.disable()
-
-    if debug:
-        ic.enable()
     
     app = registry(init_app(), root_folder=root_folder)
     

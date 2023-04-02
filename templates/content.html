@@ -1,0 +1,24 @@
+{% block content %}
+    <ul id="item-list">
+    //% for dir in dirlist 
+    <li class="with-marker"><a href={[ dir.link | e ]}>{[ dir.name ]}</a></li>
+    //% endfor 
+
+    <div class="{[ 'gallery' if not dirlist else '']}">
+    //% for file in filelist 
+        //# imgtype = {'png', 'jpg', 'jpeg', 'gif', 'jfif', 'webp', 'bmp'}; may be omitted but for reminder
+        //% if file.name.split('.')[-1] in config['imgtype'] 
+            <li class="{[ 'reading' if not dirlist else 'icon' ]}">
+                <img class="lazy" alt="{[ file.link | e ]}" style="width: 100%; height: 100%">
+            </li>
+        //% else 
+            <li class="with-marker">
+                无法预览
+            <a href={[ file.link | e ]}>{[ file.name ]}</a>
+            </li>
+        //% endif 
+    //% endfor 
+    </div>
+
+    </ul>
+{% endblock content %}

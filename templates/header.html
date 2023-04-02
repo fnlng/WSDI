@@ -1,0 +1,23 @@
+{% macro trunc(str, size=50) %}
+    {[ str if str|length < size else str|slice(size)|list|first|join + '...' ]}
+{% endmacro %}
+
+{% block header %}
+    {% block breadcrumb %}
+    <ul class='breadcrumb'>
+    <li><a href="{[ url_for('file_list_html', folder='') ]}">~</a></li>
+    //% for path in paths[:-1] 
+    <li><a href="{[ url_for('file_list_html', folder=paths|batch(loop.index)|first|join('/')) ]}">{[ trunc(path, 50) ]}</a></li>
+    //% endfor 
+    <li>{[ trunc(paths[-1], 50) ]}</li>
+    </ul>
+    {% endblock breadcrumb %}
+    
+    {% block upload %}
+    <form action="{[ url_for('upload', folder=paths|join('/')) ]}" method='post' enctype='multipart/form-data'>
+    <input type="file" name="upload" id="file" hidden accept="image/*, video/*, .rar, .zip">
+    <label class="upload" for="file">上传</label>
+    <button>上传</button>
+    </form>
+    {% endblock upload %}
+{% endblock header %}

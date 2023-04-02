@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% block meta %}
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% endblock meta %}
+  
+  <title>{% block title %}
+    Web Server Directory Index
+  {% endblock title %}</title>
+
+  {% block js %}
+  <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+
+  <script>
+    var srcset = [];
+    //% if not dirlist
+    //% for file in filelist
+      srcset.push('{[ file.link ]}');
+      // console.log("{[ file ]}" + "{[ 'reading' if not dirlist else 'icon' ]}");
+    //% endfor
+    //% endif
+    console.log(srcset);
+    document.addEventListener("DOMContentLoaded", () => {
+      if (!("IntersectionObserver" in window)) {
+        return
+      }
+      let fileToLoad = [].slice.call(document.querySelectorAll("img.lazy"));
+      let io = new IntersectionObserver(
+        (changes) => {
+          changes.forEach(change => {
+            if (change.isIntersecting) {
+              let el = change.target;
+              // el.src = srcset[i]
+              fetch(el.alt)
+                .then(res => res.blob())
+                .then(blob => {
+                  el.src = URL.createObjectURL(blob);
+                  el.classList.remove("lazy");
+                  io.unobserve(el);
+                })
+            }
+          })
+        }, {
+          // root: document.body,
+          rootMargin: "500px 0px 0px 0px",
+          //threshold: [0, 0.25, 0.5, 0.75, 1.0]
+        }
+      )
+      fileToLoad.forEach(t => {
+        io.observe(t);
+      })
+    });
+
+  </script>
+  {% endblock js %}
+
+  {% block css %}
+  <link rel="stylesheet" href="{[ url_for('static', filename='style.css') ]}">  
+  {% endblock css %}
+</head>
+
+<body>
+<div>
+  <div class="header">
+    {% include "header.html" %}
+  </div>
+
+  <hr>
+
+  <div class="content">
+    {% include "content.html" %}
+  </div>
+</div>
+
+<script>
+  document.querySelector('body').addEventListener("drop", (e)=>{
+    e.preventDefault();//不写的话，就打开了
+    let file = e.dataTransfer.files[0];
+    uploadFile(file);
+  });
+
+  const uploadFile = (file) => {
+    if (file === null) {
+      let fileData = $('input[type=file]')[0].files;
+      let file = fileData[0];
+    }
+    let xhr = new XMLHttpRequest();
+    if (xhr.upload) {
+      xhr.upload.addEventListener('progress', (e) => {
+        console.log(file, e.loaded, e.total)
+      }, false);
+      xhr.onreadystatechange = (e) => {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            console.log('成功', xhr.responseText)
+          } else {
+            console.log('失败')
+          }
+        }
+      }
+    }
+
+    xhr.open('POST', "{[ url_for('upload', folder=paths|join('/')) ]}", true);
+    xhr.send(file);
+  }
+</script>
+</body>
+</html>
